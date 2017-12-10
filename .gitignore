@@ -13,4 +13,7 @@ env.bak/
 venv.bak/
 
 # igronre database created by coinmarketcap module
-.sqlite
+*.sqlite
+
+# automatically generated JSON config files
+*.json
