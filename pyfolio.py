@@ -37,6 +37,30 @@ def remove(currency, amount):
     reverse of add()
     '''
     pass
+    currency = currency.lower()
+    cmarkap = c.Market()
+    coin_stats = cmarkap.ticker(currency, convert=convertion_currency)[0]
+    coin_price = float(coin_stats[price_])
+
+    my_folio = _fetch_saved_portfolio()
+    if currency in my_folio:
+        curr = my_folio[currency]
+        if curr['amount'] < amount:
+            print 'You only have {} of {}... '.format(
+                str(curr['amount']),
+                currency)
+            return None
+        else:
+            curr['amount'] -= amount
+    else:
+        print 'You have no {} in your portfolio...'.format(currency)
+        return None
+
+    curr[price_] = float(coin_price)
+    curr['total_value'] = curr[price_] * curr['amount']
+    my_folio[currency] = curr
+
+    _save_portfolio(my_folio)
 
 
 def _total_portfolio_value(my_folio):
@@ -93,15 +117,6 @@ def _fetch_saved_portfolio():
         with open('my_folio.json', 'w+') as f:
             f.write(json.dumps(my_folio_json))
 
-    # if not my_folio:
-    #     print 'No saved portfolio. New created.'
-    #     my_folio_json = {}
-
-    #     with open('my_folio.json', 'w+') as f:
-    #         f.write(json.dumps(my_folio_json))
-
-    # else:
-    #     my_folio_json = json.loads(my_folio)
     return my_folio_json
 
 def _save_portfolio(my_folio_json):
