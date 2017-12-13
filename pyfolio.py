@@ -1,14 +1,16 @@
 import coinmarketcap as c
 import json
+import pandas as pd
 
 convertion_currency = 'USD'
 price_ = 'price_' + convertion_currency.lower()
 
 def main():
     my_folio, my_folio_total = _refresh()
-    print 'My portfolio is:'
-    print my_folio
-    print 'Total ' + convertion_currency + ' value: ' + str(my_folio_total)
+    my_folio_table = _pd_sort_and_print(my_folio)
+    print 'My portfolio is ({} values):'.format(convertion_currency)
+    print my_folio_table
+    #print 'Total ' + convertion_currency + ' value: ' + str(my_folio_total)
 
 def add(currency, amount):
     currency = currency.lower()
@@ -91,18 +93,29 @@ def _refresh():
     return my_folio, total_portfolio_value
 
 
-## TODO
-# returns 
+def _pd_sort_and_print(my_folio):
+    # reads JSON into DataFrame object
+    df = pd.read_json('my_folio.json')
+    # transpose df
+    df = df.transpose()
+    # sort and select columns
+    df = df[['amount', 'price_usd', 'total_value']].sort_values(['total_value'], ascending=False)
+    # define total sum row
+    sum_row = {col: df[col].sum() if col == 'total_value' else None for col in df}
+    # Turn the sums into a DataFrame with one row with an index of 'Total':
+    sum_df = pd.DataFrame(sum_row, index=["Total"])
+    # Now append the row:
+    df = df.append(sum_df)
 
-#Traceback (most recent call last):
-#  File "<stdin>", line 1, in <module>
-#  File "pyfolio.py", line 70
-#    my_folio_sorted = sorted(my_folio.items(), key=lambda item: item[1][param], reverse)
-#SyntaxError: non-keyword arg after keyword ar
+    return df
 
-#def _sort_portfolio(my_folio, param, reverse=False):
-#    my_folio_sorted = sorted(my_folio.items(), key=lambda item: item[1][param], reverse)
-#    return my_folio_sorted
+
+# TODO
+# as long as I am using pandas, maybe makes sense to do all 
+# data wrangling with pandas
+def _sort_portfolio(my_folio, param, reverse=False):
+    my_folio_sorted = sorted(my_folio.items(), key=lambda item: item[1][param], reverse=reverse)
+    return my_folio_sorted
 
 
 def _fetch_saved_portfolio():
