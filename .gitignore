@@ -11,6 +11,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+vpyfolio/
 
 # igronre database created by coinmarketcap module
 *.sqlite
