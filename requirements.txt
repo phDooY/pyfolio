@@ -1,2 +1,4 @@
 coinmarketcap
 pandas
+requests
+Pillow
